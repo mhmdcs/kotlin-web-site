@@ -40,14 +40,34 @@ Its first parameter is the object you read `p` from, and the second parameter ho
 (for example, you can take its name). 
 
 ```kotlin
-val e = Example()
-println(e.p)
+import kotlin.reflect.KProperty
+
+class Delegate {
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): String {
+        return "$thisRef, thank you for delegating '${property.name}' to me!"
+    }
+
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: String) {
+        println("$value has been assigned to '${property.name}' in $thisRef.")
+    }
+}
+
+class Example {
+    var p: String by Delegate()
+}
+
+fun main(){
+//sampleStart
+    val e = Example()
+//sampleEnd
+}
 ```
+{kotlin-runnable="true"}
 
 This prints:
 
 ```
-Example@33a17727, thank you for delegating 'p' to me!
+Example@hashcode, thank you for delegating 'p' to me!
 ```
 
 Similarly, when you assign to `p`, the `setValue()` function is called. The first two parameters are the same, and
